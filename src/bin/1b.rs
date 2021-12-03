@@ -1,35 +1,38 @@
 fn main() {
-    println!("{}", depth_increases(&INPUT));
+    println!("{}", depth_increases_part_2(&INPUT));
 }
 
-fn depth_increases(depths: &[usize]) -> usize {
-    let mut depth_iter = depths.iter();
-    let mut increases = 0;
-    let mut previous_depth = match depth_iter.next() {
-        None => return 0,
-        Some(value) => value,
-    };
-
-    for current in depth_iter {
-        if current > previous_depth {
-            increases = increases + 1;
-        }
-        previous_depth = current;
+fn depth_increases_part_2(depths: &[usize]) -> usize {
+    if depths.len() < 3 {
+        return 0;
     }
 
+    let mut window_sum: usize = depths.iter().take(3).sum();
+    let front_iter = depths.iter().skip(3);
+    let mut trail_iter = depths.iter();
+    let mut previous = window_sum;
+    let mut increases = 0;
+    for current in front_iter {
+        let remove_this = *trail_iter.next().unwrap();
+        window_sum = window_sum - remove_this + current;
+        if window_sum > previous {
+            increases += 1;
+        }
+        previous = window_sum;
+    }
     increases
 }
 
 #[test]
 fn test_depth_increases() {
-    let answer = depth_increases(&TEST);
-    assert_eq!(answer, 7);
+    let answer = depth_increases_part_2(&TEST);
+    assert_eq!(answer, 5);
 }
 
 #[test]
 fn test_depth_increases_input() {
-    let answer = depth_increases(&INPUT);
-    assert_eq!(answer, 1195);
+    let answer = depth_increases_part_2(&INPUT);
+    assert_eq!(answer, 1235);
 }
 
 #[allow(unused)]
