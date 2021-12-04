@@ -5,3 +5,4 @@ authors = ["Matt Briggs <matthew.james.briggs@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+anyhow = "1"
