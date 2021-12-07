@@ -17,3 +17,12 @@ No time to clean it up, must press on 😅.
 
 Day 6, which I did on December 7th, was easier for me.
 The key insight is to model the lifecycle of the blowfish in a vector of size 9.
+
+### Day 7
+
+Yay I did day 7 on December 7 so I am caught up.
+
+At first I thought that we needed only return the *position* that was best to align the crab submarines on.
+For this, I thought there might be some optimization utilizing mode and a tiebreaker using the average.
+Then I got wrong answers because I was supposed to be returning the fuel cost.
+Anyway, my solution is brute force, though I did at least look up the formula for triangular numbers (my CPU was able to brute force that as well, but it took a while).
