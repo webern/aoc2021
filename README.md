@@ -12,3 +12,8 @@ Part 1 took a while and is probably inefficient (it creates a grid like the exam
 
 Uh oh, I just finished Day 5 Part 2 and now it's December 7th.
 No time to clean it up, must press on 😅.
+
+### Day 6
+
+Day 6, which I did on December 7th, was easier for me.
+The key insight is to model the lifecycle of the blowfish in a vector of size 9.
