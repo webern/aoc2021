@@ -69,10 +69,31 @@ Determine the horizontal position that the crabs can align to using the least fu
 mod data;
 
 use crate::day7::data::INPUT_DATA;
+use std::collections::HashMap;
 
-pub fn solve() {
-    println!("Part 1: {}", brute_force_part_1(&INPUT_DATA));
+pub fn solve(solution: Solution) {
+    println!("Part 1: {}", solve_part_1(&INPUT_DATA, solution));
     println!("Part 2: {}", brute_force_part_2(&INPUT_DATA));
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum Solution {
+    BruteForce,
+    Optimized,
+}
+
+fn solve_part_1(input: &[usize], solution: Solution) -> usize {
+    match solution {
+        Solution::BruteForce => brute_force_part_1(input),
+        Solution::Optimized => optimized_part_1(input),
+    }
+}
+
+fn solve_part_2(input: &[usize], solution: Solution) -> usize {
+    match solution {
+        Solution::BruteForce => brute_force_part_2(input),
+        Solution::Optimized => optimized_part_2(input),
+    }
 }
 
 fn brute_force_part_1(input: &[usize]) -> usize {
@@ -139,19 +160,155 @@ fn triangular_number(n: usize) -> usize {
 }
 
 #[test]
-fn solve_part_1_test() {
-    assert_eq!(brute_force_part_1(&crate::day7::data::TEST), 37);
-    assert_eq!(brute_force_part_1(&[0usize, 0, 100]), 100);
-    assert_eq!(brute_force_part_1(&[1usize, 2, 3]), 2);
-    assert_eq!(brute_force_part_1(&[1usize, 1, 0]), 1);
-    assert_eq!(brute_force_part_1(&[100usize, 1]), 99);
-    assert_eq!(brute_force_part_1(&[1usize, 1, 99, 100]), 197);
-    assert_eq!(brute_force_part_1(&[1usize, 1, 99, 99, 100]), 197);
-    assert_eq!(brute_force_part_1(&INPUT_DATA), 356958);
+fn brute_force_part_1_test() {
+    test_part_1(Solution::BruteForce)
+}
+
+#[test]
+fn optimized_part_1_test() {
+    test_part_1(Solution::Optimized)
+}
+
+fn test_part_1(solution: Solution) {
+    // assert_eq!(solve_part_1(&crate::day7::data::TEST, solution), 37);
+    // assert_eq!(solve_part_1(&[0usize, 0, 100], solution), 100);
+    // assert_eq!(solve_part_1(&[1usize, 2, 3], solution), 2);
+    // assert_eq!(solve_part_1(&[1usize, 1, 0], solution), 1);
+    // assert_eq!(solve_part_1(&[100usize, 1], solution), 99);
+    // assert_eq!(solve_part_1(&[1usize, 1, 99, 100], solution), 197);
+    // assert_eq!(solve_part_1(&[1usize, 1, 99, 99, 100], solution), 197);
+    assert_eq!(solve_part_1(&INPUT_DATA, solution), 356958);
 }
 
 #[test]
 fn solve_part_2_test() {
     assert_eq!(brute_force_part_2(&crate::day7::data::TEST), 168);
     assert_eq!(brute_force_part_2(&INPUT_DATA), 105461913);
+}
+
+#[derive(Debug, Clone, Default)]
+struct DatasetAnalysis {
+    /// All numbers that are tied for being the mode of the dataset.
+    modes: Vec<usize>,
+    /// The number of times a mode value appears in the dataset.
+    #[allow(unused)]
+    mode_count: usize,
+    minimum: usize,
+    maximum: usize,
+}
+
+impl DatasetAnalysis {
+    fn mean_floor(&self) -> usize {
+        let width = self.maximum - self.minimum;
+        self.minimum + (width / 2)
+    }
+
+    fn mean_ceiling(&self) -> usize {
+        let mut width = self.maximum - self.minimum;
+        if width % 2 != 0 {
+            width += 1
+        }
+        self.minimum + (width / 2)
+    }
+}
+
+fn analyze(input: &[usize]) -> DatasetAnalysis {
+    let mut histogram = HashMap::<usize, usize>::new();
+    let mut sum = 0usize;
+    let mut minimum = usize::MAX;
+    let mut maximum = usize::MIN;
+    for &n in input {
+        *histogram.entry(n).or_default() += 1;
+        sum += n;
+        if n < minimum {
+            minimum = n;
+        }
+        if n > maximum {
+            maximum = n;
+        }
+    }
+    let sumf = sum as f64;
+    let countf = input.len() as f64;
+    let avgf = sumf / countf;
+    let mut max_count = 0;
+    for (_, &count) in &histogram {
+        if count > max_count {
+            max_count = count;
+        }
+    }
+    let mut modes = Vec::new();
+    for (n, count) in histogram {
+        if count == max_count {
+            modes.push(n);
+        }
+    }
+    let analysis = DatasetAnalysis {
+        modes,
+        mode_count: max_count,
+        minimum,
+        maximum,
+    };
+    println!("{:?}", analysis);
+    analysis
+}
+
+fn best_position(analysis: &DatasetAnalysis) -> usize {
+    let mut best: usize = usize::MAX;
+    let mut best_distance = usize::MAX;
+    for &mode in &analysis.modes {
+        let distance_from_average =
+            std::cmp::max(analysis.average, mode) - std::cmp::min(analysis.average, mode);
+        if distance_from_average < best_distance {
+            best = mode;
+            best_distance = distance_from_average;
+        }
+    }
+    println!("{}", best);
+    best
+}
+
+fn calculate_fuel_cost_part_1(input: &[usize], position: usize) -> usize {
+    let mut fuel_cost = 0usize;
+    for &n in input {
+        let diff = std::cmp::max(position, n) - std::cmp::min(position, n);
+        fuel_cost += diff;
+    }
+    println!("{}", fuel_cost);
+    fuel_cost
+}
+
+fn calculate_fuel_cost_part_2(input: &[usize], position: usize) -> usize {
+    let mut fuel_cost = 0usize;
+    for &n in input {
+        let diff = std::cmp::max(position, n) - std::cmp::min(position, n);
+        let triangular_fuel_cost = triangular_number(diff);
+        fuel_cost += triangular_fuel_cost;
+    }
+    println!("{}", fuel_cost);
+    fuel_cost
+}
+
+#[allow(unused)]
+fn optimized_part_1(input: &[usize]) -> usize {
+    let analysis = analyze(input);
+    let position = best_position(&analysis);
+    calculate_fuel_cost_part_1(input, position)
+}
+
+#[allow(unused)]
+fn optimized_part_2(input: &[usize]) -> usize {
+    let analysis = analyze(input);
+    let position = best_position(&analysis);
+    calculate_fuel_cost_part_2(input, position)
+}
+
+#[test]
+fn best_position_test() {
+    let analysis = DatasetAnalysis {
+        modes: vec![1, 2, 3],
+        mode_count: 1,
+        average: 2,
+    };
+    let best = best_position(&analysis);
+    assert_eq!(best, 2);
 }
