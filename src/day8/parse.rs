@@ -1,7 +1,9 @@
 use crate::day8::data::test_data;
-use crate::day8::enigma::SubmarineDisplay;
+use crate::day8::enigma::DisplayedDigit;
 use crate::day8::Enigma;
 use anyhow::{ensure, Context, Result};
+use std::convert::{Infallible, TryInto};
+use std::ops::Deref;
 
 pub(super) fn parse(s: &str) -> Result<Vec<Enigma>> {
     s.lines().map(|line| parse_one_line(line)).collect()
@@ -16,18 +18,13 @@ fn parse_one_line(s: &str) -> Result<Enigma> {
         .next()
         .context("Unable to find readout samples when parsing")?;
     Ok(Enigma::new(
-        parse_displays::<10>(samples_string)?,
-        parse_displays::<4>(readout)?,
+        parse_displays(samples_string)?,
+        parse_displays(readout)?,
     ))
 }
 
-fn parse_displays<const T: usize>(s: &str) -> Result<[SubmarineDisplay; T]> {
-    let mut displays = [SubmarineDisplay::default(); T];
-    for (index, word) in s.split(' ').enumerate() {
-        ensure!(index < T, "Too many words being parsed, more than {}", T);
-        displays[index] = SubmarineDisplay::parse(word)?;
-    }
-    Ok(displays)
+fn parse_displays(s: &str) -> Result<Vec<DisplayedDigit>> {
+    s.split(' ').map(|word| DisplayedDigit::new(word)).collect()
 }
 
 #[test]
@@ -37,6 +34,6 @@ fn test_parse() {
     let enigma = input.get(0).unwrap();
     let sample = enigma.sample(1).unwrap();
     let readout = enigma.readout(3).unwrap();
-    assert_eq!(sample.lighted(), "abcdefg");
-    assert_eq!(readout.lighted(), "bceg");
+    assert_eq!(sample.deref(), "abcdefg");
+    assert_eq!(readout.deref(), "bceg");
 }
