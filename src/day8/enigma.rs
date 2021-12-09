@@ -1,5 +1,5 @@
 use crate::day8::parse::parse;
-use anyhow::{bail, ensure, Error, Result};
+use anyhow::{bail, ensure, Context, Error, Result};
 use std::borrow::Borrow;
 use std::convert::TryFrom;
 use std::fmt::{Debug, Display, Formatter};
@@ -142,6 +142,7 @@ impl DisplayedDigit {
         if display[6] {
             value.push('g');
         }
+        ensure!(!value.is_empty(), "Cannot have an empty one of these");
         Ok(Self(value))
     }
 
@@ -178,6 +179,50 @@ impl Enigma {
 
     pub(super) fn readouts(&self) -> &[DisplayedDigit] {
         self.readouts.as_slice()
+    }
+}
+
+#[derive(Clone, Copy, Default, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub(super) struct Cypher([Option<char>; 7]);
+
+impl Cypher {
+    pub(super) fn is_complete(&self) -> bool {
+        for c in self.0 {
+            if c.is_none() {
+                return false;
+            }
+        }
+        true
+    }
+
+    pub(super) fn set(&mut self, index: usize, c: char) -> Result<bool> {
+        ensure!(index < 7, "Out of range");
+        let was_empty = self.0[index].is_none();
+        self.0[index] = Some(c);
+        Ok(was_empty)
+    }
+
+    pub(super) fn map_char(&mut self, from: char, to: char) -> Result<bool> {
+        let index = char_pos(from)?;
+        self.set(index, to)
+    }
+
+    pub(super) fn decode_char(&self, c: char) -> Result<char> {
+        let c_pos = char_pos(c)?;
+        self.0[c_pos].context("Char mapping unknown")
+    }
+}
+
+fn char_pos(c: char) -> Result<usize> {
+    match c {
+        'a' => Ok(0),
+        'b' => Ok(1),
+        'c' => Ok(2),
+        'd' => Ok(3),
+        'e' => Ok(4),
+        'f' => Ok(5),
+        'g' => Ok(6),
+        bad => bail!("Bad char '{}'", bad),
     }
 }
 

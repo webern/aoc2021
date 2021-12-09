@@ -148,11 +148,13 @@ mod enigma;
 mod parse;
 
 use crate::day8::data::input_data;
-use crate::day8::enigma::Enigma;
+use crate::day8::enigma::{Cypher, DisplayedDigit, Enigma, EIGHT, FOUR, ONE, SEVEN};
+use anyhow::{ensure, Context, Result};
+use std::ops::Deref;
 
 pub fn solve() {
     println!("Part 1: {}", solve_part_1(&input_data().unwrap()));
-    println!("Part 2: {}", solve_part_2(&input_data().unwrap()));
+    println!("Part 2: {}", solve_part_2(&input_data().unwrap()).unwrap());
 }
 
 fn solve_part_1(input: &[Enigma]) -> usize {
@@ -168,7 +170,76 @@ fn solve_part_1(input: &[Enigma]) -> usize {
     digits_with_unique_segements
 }
 
-fn solve_part_2(_input: &[Enigma]) -> usize {
+fn solve_part_2(input: &[Enigma]) -> Result<usize> {
+    let mut special_digits: (String, String, String, String) = Default::default();
+    'outer: for enigma in input {
+        for sample in enigma.samples() {
+            if special_digits.0.is_empty() && sample.deref().len() == 2 {
+                special_digits.0 = sample.deref().to_owned();
+            } else if special_digits.1.is_empty() && sample.deref().len() == 4 {
+                special_digits.1 = sample.deref().to_owned();
+            } else if special_digits.2.is_empty() && sample.deref().len() == 3 {
+                special_digits.2 = sample.deref().to_owned();
+            } else if special_digits.3.is_empty() && sample.deref().len() == 7 {
+                special_digits.3 = sample.deref().to_owned();
+            } else if !special_digits.0.is_empty()
+                && !special_digits.1.is_empty()
+                && !special_digits.2.is_empty()
+                && !special_digits.3.is_empty()
+            {
+                break 'outer;
+            }
+        }
+    }
+
+    ensure!(
+        !special_digits.0.is_empty()
+            && !special_digits.1.is_empty()
+            && !special_digits.2.is_empty()
+            && !special_digits.3.is_empty(),
+        "I'm too stupid to figure this out"
+    );
+
+    let one = DisplayedDigit::new(special_digits.0).ok();
+    let four = DisplayedDigit::new(special_digits.1).ok();
+    let seven = DisplayedDigit::new(special_digits.2).ok();
+    let eight = DisplayedDigit::new(special_digits.3).ok();
+    let mut cypher = Cypher::default();
+
+    if let Some(one) = one {
+        let mut reference = ONE.chars();
+        for from in one.deref().chars() {
+            let to = reference.next().unwrap();
+            cypher.map_char(from, to).unwrap();
+        }
+    }
+
+    if let Some(four) = four {
+        let mut reference = FOUR.chars();
+        for from in four.deref().chars() {
+            let to = reference.next().unwrap();
+            cypher.map_char(from, to).unwrap();
+        }
+    }
+
+    if let Some(seven) = seven {
+        let mut reference = SEVEN.chars();
+        for from in seven.deref().chars() {
+            let to = reference.next().unwrap();
+            cypher.map_char(from, to).unwrap();
+        }
+    }
+
+    if let Some(eight) = eight {
+        let mut reference = EIGHT.chars();
+        for from in eight.deref().chars() {
+            let to = reference.next().unwrap();
+            cypher.map_char(from, to).unwrap();
+        }
+    }
+
+    ensure!(cypher.is_complete(), "Cypher is not complete");
+
     todo!()
 }
 
@@ -177,4 +248,11 @@ fn solve_part_1_test() {
     let input = crate::day8::data::test_data().unwrap();
     let answer = solve_part_1(&input);
     assert_eq!(answer, 26);
+}
+
+#[test]
+fn solve_part_2_test() {
+    let input = crate::day8::data::test_data().unwrap();
+    let answer = solve_part_2(&input).unwrap();
+    assert_eq!(answer, 61229);
 }
