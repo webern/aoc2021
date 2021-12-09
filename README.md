@@ -26,3 +26,8 @@ At first I thought that we needed only return the *position* that was best to al
 For this, I thought there might be some optimization utilizing mode and a tiebreaker using the average.
 Then I got wrong answers because I was supposed to be returning the fuel cost.
 Anyway, my solution is brute force, though I did at least look up the formula for triangular numbers (my CPU was able to brute force that as well, but it took a while).
+
+### Day 8
+
+Ugh. Day 8 kicked my ass.
+I'll have to decide tomorrow whether to try and continue or not.
