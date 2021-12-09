@@ -7,177 +7,83 @@ use std::ops::Deref;
 use std::str::FromStr;
 
 pub(super) const ZERO: &str = "abcef";
+pub(super) const ZERO_LEN: usize = 5;
+
 pub(super) const ONE: &str = "cf";
+pub(super) const ONE_LEN: usize = 2;
+
 pub(super) const TWO: &str = "acdeg";
+pub(super) const TWO_LEN: usize = ZERO_LEN;
+
 pub(super) const THREE: &str = "acdfg";
+pub(super) const THREE_LEN: usize = ZERO_LEN;
+
 pub(super) const FOUR: &str = "bcdf";
+pub(super) const FOUR_LEN: usize = 4;
+
 pub(super) const FIVE: &str = "abdfg";
+pub(super) const FIVE_LEN: usize = ZERO_LEN;
+
 pub(super) const SIX: &str = "abdefg";
+pub(super) const SIX_LEN: usize = 6;
+
 pub(super) const SEVEN: &str = "acf";
+pub(super) const SEVEN_LEN: usize = 3;
+
 pub(super) const EIGHT: &str = "abcdefg";
+pub(super) const EIGHT_LEN: usize = 7;
+
 pub(super) const NINE: &str = "abcdfg";
+pub(super) const NINE_LEN: usize = SIX_LEN;
 
-#[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub(super) struct DisplayedDigit(String);
+pub(super) const UNIQUE_LENGTHS: [usize; 4] = [ONE_LEN, FOUR_LEN, SEVEN_LEN, EIGHT_LEN];
 
-impl Default for DisplayedDigit {
-    fn default() -> Self {
-        Self(String::from(ZERO))
+pub(super) const A: usize = 0;
+pub(super) const B: usize = 1;
+pub(super) const C: usize = 2;
+pub(super) const D: usize = 3;
+pub(super) const E: usize = 4;
+pub(super) const F: usize = 5;
+pub(super) const G: usize = 6;
+
+pub(crate) fn char_to_position(c: char) -> Result<usize> {
+    match c {
+        'a' => Ok(A),
+        'b' => Ok(B),
+        'c' => Ok(C),
+        'd' => Ok(D),
+        'e' => Ok(E),
+        'f' => Ok(F),
+        'g' => Ok(G),
+        _ => bail!("Bad char '{}'", c),
     }
 }
 
-impl AsRef<str> for DisplayedDigit {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
-
-impl AsRef<String> for DisplayedDigit {
-    fn as_ref(&self) -> &String {
-        &self.0
-    }
-}
-
-impl Deref for DisplayedDigit {
-    type Target = str;
-
-    fn deref(&self) -> &Self::Target {
-        self.as_ref()
-    }
-}
-
-impl Borrow<String> for DisplayedDigit {
-    fn borrow(&self) -> &String {
-        &self.0
-    }
-}
-
-impl Borrow<str> for DisplayedDigit {
-    fn borrow(&self) -> &str {
-        &self.0
-    }
-}
-
-impl Display for DisplayedDigit {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        Display::fmt(&self.0, f)
-    }
-}
-
-impl Debug for DisplayedDigit {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        Debug::fmt(&self.0, f)
-    }
-}
-
-impl FromStr for DisplayedDigit {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self> {
-        DisplayedDigit::new(s)
-    }
-}
-
-impl TryFrom<&str> for DisplayedDigit {
-    type Error = Error;
-
-    fn try_from(value: &str) -> Result<Self> {
-        DisplayedDigit::new(value)
-    }
-}
-
-impl TryFrom<&String> for DisplayedDigit {
-    type Error = Error;
-
-    fn try_from(value: &String) -> Result<Self> {
-        DisplayedDigit::new(value)
-    }
-}
-
-impl TryFrom<String> for DisplayedDigit {
-    type Error = Error;
-
-    fn try_from(value: String) -> Result<Self> {
-        DisplayedDigit::new(value)
-    }
-}
-
-impl DisplayedDigit {
-    pub(super) fn new<S>(s: S) -> Result<Self>
-    where
-        S: AsRef<str>,
-    {
-        let mut display = [false; 7];
-        for char in s.as_ref().chars() {
-            match char {
-                'a' => display[0] = true,
-                'b' => display[1] = true,
-                'c' => display[2] = true,
-                'd' => display[3] = true,
-                'e' => display[4] = true,
-                'f' => display[5] = true,
-                'g' => display[6] = true,
-                bad => bail!("Unexpected char '{}'", bad),
-            }
-        }
-        let mut value = String::new();
-        if display[0] {
-            value.push('a');
-        }
-        if display[1] {
-            value.push('b');
-        }
-        if display[2] {
-            value.push('c');
-        }
-        if display[3] {
-            value.push('d');
-        }
-        if display[4] {
-            value.push('e');
-        }
-        if display[5] {
-            value.push('f');
-        }
-        if display[6] {
-            value.push('g');
-        }
-        ensure!(!value.is_empty(), "Cannot have an empty one of these");
-        Ok(Self(value))
-    }
-
-    /// Does this digit have a unique number of lighted segments? Digits 1, 4, 7 and 8 have unique
-    /// numbers of segments (2, 4, 3 and 7, respectively).
-    pub(super) fn is_unique(&self) -> bool {
-        let l = self.0.len();
-        l == 2 || l == 4 || l == 3 || l == 7
-    }
-}
 pub(super) struct Enigma {
-    samples: Vec<DisplayedDigit>,
-    readouts: Vec<DisplayedDigit>,
+    samples: Vec<String>,
+    readouts: Vec<String>,
 }
 
 impl Enigma {
-    pub(super) fn new(samples: Vec<DisplayedDigit>, readouts: Vec<DisplayedDigit>) -> Self {
+    pub(super) fn new(samples: Vec<String>, readouts: Vec<String>) -> Self {
         Self { samples, readouts }
     }
 
-    pub(super) fn sample(&self, i: usize) -> Result<&DisplayedDigit> {
+    pub(super) fn sample(&self, i: usize) -> Result<&String> {
         ensure!(i < 10, "Out of range");
         Ok(&self.samples[i])
     }
 
-    pub(super) fn samples(&self) -> &[DisplayedDigit] {
+    pub(super) fn samples(&self) -> &[String] {
         self.samples.as_slice()
     }
 
-    pub(super) fn readout(&self, i: usize) -> Result<&DisplayedDigit> {
+    pub(super) fn readout(&self, i: usize) -> Result<&String> {
         ensure!(i < 4, "Out of range");
         Ok(&self.readouts[i])
     }
 
-    pub(super) fn readouts(&self) -> &[DisplayedDigit] {
+    pub(super) fn readouts(&self) -> &[String] {
         self.readouts.as_slice()
     }
 }
@@ -224,40 +130,4 @@ fn char_pos(c: char) -> Result<usize> {
         'g' => Ok(6),
         bad => bail!("Bad char '{}'", bad),
     }
-}
-
-#[test]
-fn is_unique_test() {
-    let enigma = parse(
-        "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe",
-    )
-    .unwrap();
-    assert!(enigma
-        .get(0)
-        .unwrap()
-        .readouts()
-        .get(0)
-        .unwrap()
-        .is_unique());
-    assert!(!enigma
-        .get(0)
-        .unwrap()
-        .readouts()
-        .get(1)
-        .unwrap()
-        .is_unique());
-    assert!(!enigma
-        .get(0)
-        .unwrap()
-        .readouts()
-        .get(2)
-        .unwrap()
-        .is_unique());
-    assert!(enigma
-        .get(0)
-        .unwrap()
-        .readouts()
-        .get(3)
-        .unwrap()
-        .is_unique());
 }

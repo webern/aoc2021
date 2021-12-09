@@ -148,8 +148,12 @@ mod enigma;
 mod parse;
 
 use crate::day8::data::input_data;
-use crate::day8::enigma::{Cypher, DisplayedDigit, Enigma, EIGHT, FOUR, ONE, SEVEN};
+use crate::day8::enigma::{
+    char_to_position, Cypher, Enigma, EIGHT, EIGHT_LEN, FOUR, FOUR_LEN, ONE, ONE_LEN, SEVEN,
+    SEVEN_LEN, UNIQUE_LENGTHS,
+};
 use anyhow::{ensure, Context, Result};
+use std::collections::HashSet;
 use std::ops::Deref;
 
 pub fn solve() {
@@ -158,89 +162,88 @@ pub fn solve() {
 }
 
 fn solve_part_1(input: &[Enigma]) -> usize {
-    let mut digits_with_unique_segements = 0usize;
+    let mut count = 0;
     for enigma in input {
-        let readouts = enigma.readouts();
-        for readout in readouts {
-            if readout.is_unique() {
-                digits_with_unique_segements += 1;
+        for readout in enigma.readouts() {
+            for unique_len in UNIQUE_LENGTHS {
+                let readout = readout.as_str();
+                if readout.len() == unique_len {
+                    count += 1;
+                }
             }
         }
     }
-    digits_with_unique_segements
+    count
 }
 
 fn solve_part_2(input: &[Enigma]) -> Result<usize> {
-    let mut special_digits: (String, String, String, String) = Default::default();
+    let mut sum = 0usize;
     'outer: for enigma in input {
-        for sample in enigma.samples() {
-            if special_digits.0.is_empty() && sample.deref().len() == 2 {
-                special_digits.0 = sample.deref().to_owned();
-            } else if special_digits.1.is_empty() && sample.deref().len() == 4 {
-                special_digits.1 = sample.deref().to_owned();
-            } else if special_digits.2.is_empty() && sample.deref().len() == 3 {
-                special_digits.2 = sample.deref().to_owned();
-            } else if special_digits.3.is_empty() && sample.deref().len() == 7 {
-                special_digits.3 = sample.deref().to_owned();
-            } else if !special_digits.0.is_empty()
-                && !special_digits.1.is_empty()
-                && !special_digits.2.is_empty()
-                && !special_digits.3.is_empty()
-            {
-                break 'outer;
-            }
-        }
+        let soved = solve_enigma(enigma)?;
+        sum += soved;
+    }
+    Ok(solved)
+}
+
+fn solve_enigma(enigma: &Enigma) -> Result<usize> {
+    let mut patterns = HashSet::new();
+
+    for sample in enigma.samples() {
+        patterns.insert(sample);
     }
 
-    ensure!(
-        !special_digits.0.is_empty()
-            && !special_digits.1.is_empty()
-            && !special_digits.2.is_empty()
-            && !special_digits.3.is_empty(),
-        "I'm too stupid to figure this out"
-    );
-
-    let one = DisplayedDigit::new(special_digits.0).ok();
-    let four = DisplayedDigit::new(special_digits.1).ok();
-    let seven = DisplayedDigit::new(special_digits.2).ok();
-    let eight = DisplayedDigit::new(special_digits.3).ok();
-    let mut cypher = Cypher::default();
-
-    if let Some(one) = one {
-        let mut reference = ONE.chars();
-        for from in one.deref().chars() {
-            let to = reference.next().unwrap();
-            cypher.map_char(from, to).unwrap();
+    let patterns: Vec<&str> = patterns.iter().map(|s| s.as_str()).collect();
+    let mut visited: Vec<bool> = vec![false; patterns.len()];
+    let mut cipher: [Option<char>; 7] = Default::default();
+    for (pattern_index, &pattern) in patterns.iter().enumerate() {
+        if pattern.len() == ONE_LEN {
+            cipher = fill_cipher_fields(ONE, pattern, cipher)?;
+            visited[pattern_index] = true;
+        }
+        if pattern.len() == FOUR_LEN {
+            cipher = fill_cipher_fields(FOUR, pattern, cipher)?;
+            visited[pattern_index] = true;
+        }
+        if pattern.len() == SEVEN_LEN {
+            cipher = fill_cipher_fields(SEVEN, pattern, cipher)?;
+            visited[pattern_index] = true;
+        }
+        if pattern.len() == EIGHT_LEN {
+            cipher = fill_cipher_fields(EIGHT, pattern, cipher)?;
+            visited[pattern_index] = true;
         }
     }
+    let solved_cipher =
+        try_cypher(&patterns, visited.clone(), cipher.clone())?.context("No solution")?;
 
-    if let Some(four) = four {
-        let mut reference = FOUR.chars();
-        for from in four.deref().chars() {
-            let to = reference.next().unwrap();
-            cypher.map_char(from, to).unwrap();
-        }
-    }
-
-    if let Some(seven) = seven {
-        let mut reference = SEVEN.chars();
-        for from in seven.deref().chars() {
-            let to = reference.next().unwrap();
-            cypher.map_char(from, to).unwrap();
-        }
-    }
-
-    if let Some(eight) = eight {
-        let mut reference = EIGHT.chars();
-        for from in eight.deref().chars() {
-            let to = reference.next().unwrap();
-            cypher.map_char(from, to).unwrap();
-        }
-    }
-
-    ensure!(cypher.is_complete(), "Cypher is not complete");
+    println!("{:?}", patterns);
 
     todo!()
+}
+
+fn fill_cipher_fields(
+    known: &str,
+    encoded: &str,
+    mut cipher: [Option<char>; 7],
+) -> Result<[Option<char>; 7]> {
+    for pos in 0..known.len() {
+        let maps_to = known.as_bytes()[pos] as char;
+        let maps_from = encoded.as_bytes()[pos] as char;
+        let cipher_position = char_to_position(maps_from)?;
+        match cipher[cipher_position] {
+            None => cipher[cipher_position] = Some(maps_to),
+            Some(existing) => ensure!(maps_to == existing, "Inconsistent cipher"),
+        }
+    }
+    Ok(cipher)
+}
+
+fn try_cypher(
+    patterns: &[&str],
+    visited: Vec<bool>,
+    cipher: [Option<char>; 7],
+) -> Result<Option<[char; 7]>> {
+    Ok(None)
 }
 
 #[test]

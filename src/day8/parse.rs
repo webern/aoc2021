@@ -1,7 +1,6 @@
 use crate::day8::data::test_data;
-use crate::day8::enigma::DisplayedDigit;
 use crate::day8::Enigma;
-use anyhow::{ensure, Context, Result};
+use anyhow::{bail, ensure, Context, Result};
 use std::convert::{Infallible, TryInto};
 use std::ops::Deref;
 
@@ -23,8 +22,61 @@ fn parse_one_line(s: &str) -> Result<Enigma> {
     ))
 }
 
-fn parse_displays(s: &str) -> Result<Vec<DisplayedDigit>> {
-    s.split(' ').map(|word| DisplayedDigit::new(word)).collect()
+fn parse_displays(s: &str) -> Result<Vec<String>> {
+    s.split(' ').map(|word| parse_word(word)).collect()
+}
+
+fn parse_word(s: &str) -> Result<String> {
+    // I don't understand why the input is in seemingly random order, so I'm sorting it on the fly.
+    let mut a = false;
+    let mut b = false;
+    let mut c = false;
+    let mut d = false;
+    let mut e = false;
+    let mut f = false;
+    let mut g = false;
+    for x in s.chars() {
+        match x {
+            'a' => a = true,
+            'b' => b = true,
+            'c' => c = true,
+            'd' => d = true,
+            'e' => e = true,
+            'f' => f = true,
+            'g' => g = true,
+            bad => bail!("Unexpected char '{}'", x),
+        }
+    }
+    let mut sorted = String::new();
+    if a {
+        sorted.push('a');
+    }
+
+    if b {
+        sorted.push('b');
+    }
+
+    if c {
+        sorted.push('c');
+    }
+
+    if d {
+        sorted.push('d');
+    }
+
+    if e {
+        sorted.push('e');
+    }
+
+    if f {
+        sorted.push('f');
+    }
+
+    if g {
+        sorted.push('g');
+    }
+
+    Ok(sorted)
 }
 
 #[test]
