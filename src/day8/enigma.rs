@@ -59,31 +59,21 @@ pub(crate) fn char_to_position(c: char) -> Result<usize> {
     }
 }
 
-pub(super) struct Enigma {
-    samples: Vec<String>,
-    readouts: Vec<String>,
+pub(super) struct Enigma<'a> {
+    samples: Vec<&'a str>,
+    readouts: Vec<&'a str>,
 }
 
-impl Enigma {
-    pub(super) fn new(samples: Vec<String>, readouts: Vec<String>) -> Self {
+impl<'a> Enigma<'a> {
+    pub(super) fn new(samples: Vec<&'a str>, readouts: Vec<&'a str>) -> Self {
         Self { samples, readouts }
     }
 
-    pub(super) fn sample(&self, i: usize) -> Result<&String> {
-        ensure!(i < 10, "Out of range");
-        Ok(&self.samples[i])
-    }
-
-    pub(super) fn samples(&self) -> &[String] {
+    pub(super) fn samples(&self) -> &[&'a str] {
         self.samples.as_slice()
     }
 
-    pub(super) fn readout(&self, i: usize) -> Result<&String> {
-        ensure!(i < 4, "Out of range");
-        Ok(&self.readouts[i])
-    }
-
-    pub(super) fn readouts(&self) -> &[String] {
+    pub(super) fn readouts(&self) -> &[&'a str] {
         self.readouts.as_slice()
     }
 }

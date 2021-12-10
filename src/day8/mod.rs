@@ -153,7 +153,7 @@ use crate::day8::enigma::{
     SEVEN_LEN, UNIQUE_LENGTHS,
 };
 use anyhow::{ensure, Context, Result};
-use std::collections::HashSet;
+use std::collections::{BTreeSet, HashSet};
 use std::ops::Deref;
 
 pub fn solve() {
@@ -166,7 +166,6 @@ fn solve_part_1(input: &[Enigma]) -> usize {
     for enigma in input {
         for readout in enigma.readouts() {
             for unique_len in UNIQUE_LENGTHS {
-                let readout = readout.as_str();
                 if readout.len() == unique_len {
                     count += 1;
                 }
@@ -177,22 +176,51 @@ fn solve_part_1(input: &[Enigma]) -> usize {
 }
 
 fn solve_part_2(input: &[Enigma]) -> Result<usize> {
-    let mut sum = 0usize;
+    // let mut sum = 0;
+    // 'outer: for enigma in input {
+    //     let solved = solve_enigma(enigma)?;
+    //     sum += solved;
+    // }
+    // Ok(sum)
+
     'outer: for enigma in input {
-        let soved = solve_enigma(enigma)?;
-        sum += soved;
+        println!("\n-----------------------------------------");
+        let mut one = false;
+        let mut four = false;
+        let mut seven = false;
+        let mut eight = false;
+        'inner: for &sample in enigma.samples() {
+            let len = sample.len();
+            println!("sample '{}' len '{}'", sample, len);
+            if len == ONE_LEN {
+                one = true;
+            } else if len == FOUR_LEN {
+                four == true;
+            } else if len == SEVEN_LEN {
+                seven == true;
+            } else if len == EIGHT_LEN {
+                eight == true;
+            } else {
+                println!("'{}' is not one of the known-length digits", sample);
+            }
+        }
+        if one && four && seven && eight {
+            println!("ok!");
+        } else {
+            panic!("not ok");
+        }
     }
-    Ok(solved)
+    Ok(0)
 }
 
 fn solve_enigma(enigma: &Enigma) -> Result<usize> {
-    let mut patterns = HashSet::new();
+    let mut patterns = BTreeSet::new();
 
     for sample in enigma.samples() {
         patterns.insert(sample);
     }
 
-    let patterns: Vec<&str> = patterns.iter().map(|s| s.as_str()).collect();
+    let patterns: Vec<&str> = patterns.iter().map(|&&s| s).collect();
     let mut visited: Vec<bool> = vec![false; patterns.len()];
     let mut cipher: [Option<char>; 7] = Default::default();
     for (pattern_index, &pattern) in patterns.iter().enumerate() {
@@ -258,4 +286,30 @@ fn solve_part_2_test() {
     let input = crate::day8::data::test_data().unwrap();
     let answer = solve_part_2(&input).unwrap();
     assert_eq!(answer, 61229);
+}
+
+fn every_cipher() -> Vec<[char; 7]> {
+    let mut vec = Vec::new();
+    for i in 'a'..='g' {
+        for j in (i as u8 + 1) as char..='g' {
+            for k in (j as u8 + 1) as char..='g' {
+                for l in (k as u8 + 1) as char..='g' {
+                    for m in (l as u8 + 1) as char..='g' {
+                        for n in (m as u8 + 1) as char..='g' {
+                            for o in (n as u8 + 1) as char..='g' {
+                                vec.push([i, j, k, l, m, n, o]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    println!("{:?}", vec);
+    vec
+}
+
+#[test]
+fn test_every_cipher() {
+    let x = every_cipher();
 }

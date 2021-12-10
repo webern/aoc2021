@@ -2,11 +2,11 @@ use crate::day8::parse::parse;
 use crate::day8::Enigma;
 use anyhow::Result;
 
-pub(super) fn input_data() -> Result<Vec<Enigma>> {
+pub(super) fn input_data() -> Result<Vec<Enigma<'static>>> {
     parse(INPUT_DATA)
 }
 
-pub(super) fn test_data() -> Result<Vec<Enigma>> {
+pub(super) fn test_data() -> Result<Vec<Enigma<'static>>> {
     parse(TEST)
 }
 
