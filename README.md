@@ -37,3 +37,7 @@ I'll have to decide tomorrow whether to try and continue or not.
 Much easier than day 8.
 I think my answer is O(n).
 Though I touch each cell multiple times, there is a constant maximum number of times that I can interact with each cell.
+
+### Day 10
+
+Fairly easy, and I actually did it on December 9th, yay.
