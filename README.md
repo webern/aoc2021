@@ -22,7 +22,7 @@ The key insight is to model the lifecycle of the blowfish in a vector of size 9.
 
 Yay I did day 7 on December 7 so I am caught up.
 
-At first I thought that we needed only return the *position* that was best to align the crab submarines on.
+At first, I thought that we needed only return the *position* that was best to align the crab submarines on.
 For this, I thought there might be some optimization utilizing mode and a tiebreaker using the average.
 Then I got wrong answers because I was supposed to be returning the fuel cost.
 Anyway, my solution is brute force, though I did at least look up the formula for triangular numbers (my CPU was able to brute force that as well, but it took a while).
@@ -31,3 +31,9 @@ Anyway, my solution is brute force, though I did at least look up the formula fo
 
 Ugh. Day 8 kicked my ass.
 I'll have to decide tomorrow whether to try and continue or not.
+
+### Day 9
+
+Much easier than day 8.
+I think my answer is O(n).
+Though I touch each cell multiple times, there is a constant maximum number of times that I can interact with each cell.
