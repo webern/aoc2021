@@ -4,6 +4,10 @@ This is the first time I have tried this.
 I'm doing this in Rust.
 Today is day 2, we'll see how long I can keep up.
 
+### Days 1-4
+
+I did these, but hadn't started journaling yet.
+
 ### Day 5
 
 Uh oh, today is the December 6th but I'm working on day 5.
