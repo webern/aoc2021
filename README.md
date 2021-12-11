@@ -41,3 +41,7 @@ Though I touch each cell multiple times, there is a constant maximum number of t
 ### Day 10
 
 Fairly easy, and I actually did it on December 9th, yay.
+
+### Day 11
+
+It took me a while, as usual, but the flashing octopus problem was not hard.
