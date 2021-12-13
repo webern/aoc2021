@@ -49,3 +49,9 @@ Fairly easy, and I actually did it on December 9th, yay.
 ### Day 11
 
 It took me a while, as usual, but the flashing octopus problem was not hard.
+
+### Day 12
+
+I've fallen behind again, it's the 13th, and I finished day 12.
+Graph with depth first search.
+Always takes me forever to get graph DFS right.
