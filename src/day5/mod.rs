@@ -2,7 +2,6 @@ mod data;
 
 use crate::day5::data::input_data;
 use anyhow::Result;
-use derive_more::Add;
 use std::fmt::{Display, Formatter};
 
 pub fn solve() {
@@ -42,13 +41,13 @@ fn solve_part_2_test() {
     assert_eq!(answer, 12);
 }
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Add)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 struct Point {
     x: usize,
     y: usize,
 }
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Add)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 struct Line {
     a: Point,
     b: Point,
