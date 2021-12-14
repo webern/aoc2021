@@ -55,3 +55,22 @@ It took me a while, as usual, but the flashing octopus problem was not hard.
 I've fallen behind again, it's the 13th, and I finished day 12.
 Graph with depth first search.
 Always takes me forever to get graph DFS right.
+
+### Day 13
+
+Having fallen behind, I've only done the input parsing for day 13 on the 13th, but I need to call it a night.
+
+...two days later...
+
+Finished day 13 on the 15th. My answer looks like this:
+
+```text
+###..#....#..#.####...##.###....##.####.
+#..#.#....#..#.#.......#.#..#....#.#....
+###..#....####.###.....#.#..#....#.###..
+#..#.#....#..#.#.......#.###.....#.#....
+#..#.#....#..#.#....#..#.#....#..#.#....
+###..####.#..#.#.....##..#.....##..#....
+```
+
+I entered `BLHFJPJF` which apparently is the right answer.
