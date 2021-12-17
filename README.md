@@ -74,3 +74,19 @@ Finished day 13 on the 15th. My answer looks like this:
 ```
 
 I entered `BLHFJPJF` which apparently is the right answer.
+
+### Day 14
+
+Not done :(
+
+### Day 15
+
+Not done :(
+
+### Day 16
+
+Got it.
+This was fun, it reminds me of [MIDI](https://github.com/webern/midi_file).
+It took me *forever* though.
+It's 2:02 AM and I'm getting too sleep-deprived. 😩
+Way to late to clean it up, so it's a mess.
