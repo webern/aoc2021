@@ -89,4 +89,4 @@ Got it.
 This was fun, it reminds me of [MIDI](https://github.com/webern/midi_file).
 It took me *forever* though.
 It's 2:02 AM and I'm getting too sleep-deprived. 😩
-Way to late to clean it up, so it's a mess.
+Way too late to clean it up, so it's a mess.
