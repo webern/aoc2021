@@ -90,3 +90,10 @@ This was fun, it reminds me of [MIDI](https://github.com/webern/midi_file).
 It took me *forever* though.
 It's 2:02 AM and I'm getting too sleep-deprived. 😩
 Way too late to clean it up, so it's a mess.
+
+### Retrospective
+
+This was fun but I can't keep up, too much going on.
+Part of the initial motivation was that I would do *all* of the Advent of Code.
+Now that this is seemingly not possible I find myself unmotivated to any more of it.
+Maybe I can get 'em all in 2022!
